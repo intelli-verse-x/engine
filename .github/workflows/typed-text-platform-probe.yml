@@ -1,0 +1,51 @@
+name: TypedText platform diagnostic
+on:
+  pull_request:
+    paths:
+      - "e2e/probe/**"
+      - "playwright.typed-text-probe.config.ts"
+      - ".github/workflows/typed-text-platform-probe.yml"
+permissions:
+  contents: read
+jobs:
+  typed-text:
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [macos-latest, macos-15-intel]
+    runs-on: ${{ matrix.os }}
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          lfs: true
+          persist-credentials: false
+      - uses: pnpm/action-setup@v6
+      - uses: actions/setup-node@v7
+        with:
+          node-version: 22.x
+          cache: pnpm
+      - name: Install locked dependencies
+        run: pnpm install --frozen-lockfile
+      - name: Install locked Chromium
+        run: npx playwright install chromium
+      - name: Build exact candidate
+        run: npm run build
+      - name: Pull unchanged reference images
+        run: git lfs pull
+      - name: Compare exact TypedText reference without tolerance
+        run: npx playwright test --config=playwright.typed-text-probe.config.ts --reporter=list,github
+        env:
+          CI: true
+      - name: Preserve actual pixels and diagnostic metadata
+        if: always()
+        uses: actions/upload-artifact@v7
+        with:
+          name: typed-text-${{ matrix.os }}-${{ github.sha }}
+          path: |
+            e2e/probe-results/
+            e2e/downloads/Text_text-typed.jpg
+            e2e/diff/Text_text-typed.jpg
+            e2e/fixtures/originImage/Text_text-typed.jpg
+          retention-days: 7
+          if-no-files-found: warn
