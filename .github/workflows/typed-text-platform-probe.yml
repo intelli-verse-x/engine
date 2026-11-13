@@ -27,6 +27,8 @@ jobs:
           cache: pnpm
       - name: Install locked dependencies
         run: pnpm install --frozen-lockfile
+      - name: Test reference selection boundaries
+        run: node --experimental-strip-types e2e/utils/screenshot-baseline.test.ts
       - name: Install locked Chromium
         run: npx playwright install chromium
       - name: Build exact candidate
