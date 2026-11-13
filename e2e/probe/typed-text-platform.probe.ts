@@ -14,6 +14,7 @@ test("TypedText exact baseline platform diagnostic", async ({ page, browser }, t
       return originalToBlob.call(this, callback, type, quality);
     };
   });
+  await fs.mkdir("e2e/diff", { recursive: true });
   try {
     await screenshotWithThreshold(page, {
       category: "Text",
