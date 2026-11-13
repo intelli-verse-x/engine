@@ -1,6 +1,7 @@
 import { Page } from "@playwright/test";
 import { compare } from "odiff-bin";
 import * as path from "path";
+import { screenshotBaseline } from "./screenshot-baseline";
 
 export interface ScreenshotOptions {
   category: string;
@@ -63,7 +64,14 @@ export async function screenshotWithThreshold(page: Page, options: ScreenshotOpt
   console.log(`📥 [${testId}] Downloaded (${Date.now() - pageRenderedTime}ms)`);
 
   // Compare with baseline
-  const baseImagePath = path.join(process.cwd(), "e2e/fixtures/originImage", imageName);
+  const baselineName = screenshotBaseline(imageName, {
+    platform: process.platform,
+    architecture: process.arch,
+    browserVersion: page.context().browser()?.version() || "unknown",
+    imageOS: process.env.ImageOS,
+    imageVersion: process.env.ImageVersion
+  });
+  const baseImagePath = path.join(process.cwd(), "e2e/fixtures/originImage", baselineName);
   const diffImagePath = path.join(process.cwd(), "e2e/diff", imageName);
 
   const result = await compare(baseImagePath, downloadPath, diffImagePath, {

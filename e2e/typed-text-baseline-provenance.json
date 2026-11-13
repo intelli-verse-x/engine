@@ -1,0 +1,42 @@
+{
+  "schema_version": "typed-text-reviewed-reference/1",
+  "scope": "Only Text_text-typed on exact approved macOS ARM provenance; original fixture retained and threshold unchanged.",
+  "original_fixture": "e2e/fixtures/originImage/Text_text-typed.jpg",
+  "original_sha256": "0d6184546518556ada1d227956814edb0185659be29028888ad61d33600cdd8d",
+  "reviewed_arm_fixture": "e2e/fixtures/originImage/Text_text-typed.macos-arm64-chromium140.jpg",
+  "reviewed_arm_sha256": "a46a39d9612c01083cc8d8cdec04c06f201cc5e5043363c5e91b8fdebdc64585",
+  "pre_jpeg_png_sha256": "462966692ca89dba54930fad1aa5c6280cdcea8f7773bb30da95fd1ba3c9f2e6",
+  "approved_provenance": {
+    "platform": "darwin",
+    "architecture": "arm64",
+    "browser_version": "140.0.7339.16",
+    "image_os": "macos26",
+    "image_version": "20261102.0473.1"
+  },
+  "determinism": {
+    "identical_jpeg_at_source_heads": [
+      "9b692cf6ab8ad5dddb3296b36960fed0bffdbc2f",
+      "960d7f9330eddf5dbe7114c84fd4d23899c04dd3",
+      "7f246d615719a65731e52684d352aab2a021fcd4"
+    ],
+    "identical_pre_jpeg_png_at_source_heads": [
+      "960d7f9330eddf5dbe7114c84fd4d23899c04dd3",
+      "7f246d615719a65731e52684d352aab2a021fcd4"
+    ]
+  },
+  "difference": {
+    "raw_pixels": 71,
+    "maximum_absolute_channel_delta": 1,
+    "odiff_reported_percent": 0.00260416666667,
+    "dimensions": [
+      1200,
+      800
+    ]
+  },
+  "review": "Independent full-resolution visual review found matching glyphs, layout, positions and background with minute edge-pixel differences; explicitly accepted this scoped expected image.",
+  "causality": "Precise renderer/JPEG cause is unproven; renderer identity not collected. This is reviewed visual acceptance with deterministic provenance, not proof of a universal benign platform difference.",
+  "intel_status": "Unvalidated: macos15 x64 Chromium140 ANGLE Apple Software Renderer failed WebGL context creation (BindToCurrentSequence failed); standalone diagnostic remains visible.",
+  "maintenance": "Unknown ARM browser or runner image fails closed and requires fresh visual and functional review. Do not auto-update references, widen threshold or silently borrow another platform image.",
+  "threshold": 0,
+  "diffPercentage": 0
+}
