@@ -71,7 +71,16 @@ jobs:
         run: npm run build
       - name: Test
         run: npm run coverage
+      - name: Preserve coverage report in forks
+        if: github.repository != 'galacean/engine'
+        uses: actions/upload-artifact@v7
+        with:
+          name: unit-coverage
+          path: coverage/
+          if-no-files-found: error
       - name: Upload coverage to Codecov
+        # This external project/token belongs to upstream, not organization forks.
+        if: github.repository == 'galacean/engine'
         uses: codecov/codecov-action@v7
         with:
           token: ${{secrets.CODECOV_TOKEN}}
