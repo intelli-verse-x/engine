@@ -3,6 +3,22 @@ import { screenshotWithThreshold } from "../utils/screenshot";
 import * as fs from "fs/promises";
 
 test("TypedText exact baseline platform diagnostic", async ({ page, browser }, testInfo) => {
+  const browserErrors: string[] = [];
+  const failedRequests: { url: string; reason: string }[] = [];
+  page.on("pageerror", (error) => {
+    if (browserErrors.length < 20) browserErrors.push(error.message.slice(0, 1000));
+  });
+  page.on("console", (message) => {
+    if (["error", "warning"].includes(message.type()) && browserErrors.length < 20) {
+      browserErrors.push(message.text().slice(0, 1000));
+    }
+  });
+  page.on("requestfailed", (request) => {
+    if (failedRequests.length < 20) {
+      const url = new URL(request.url());
+      failedRequests.push({ url: url.origin + url.pathname, reason: request.failure()?.errorText || "unknown" });
+    }
+  });
   // Observe the existing offscreen canvas immediately before JPEG encoding.
   // Keep the original toBlob receiver, callback, MIME type and quality unchanged.
   await page.addInitScript(() => {
@@ -32,6 +48,11 @@ test("TypedText exact baseline platform diagnostic", async ({ page, browser }, t
         weight: font.weight,
         style: font.style
       }))
+    })).catch((error) => ({
+      png: undefined,
+      userAgent: undefined,
+      fonts: [],
+      observationError: String(error).slice(0, 1000)
     }));
     if (observed.png) {
       const imagePath = testInfo.outputPath("TypedText-pre-jpeg.png");
@@ -48,6 +69,9 @@ test("TypedText exact baseline platform diagnostic", async ({ page, browser }, t
       imageVersion: process.env.ImageVersion,
       userAgent: observed.userAgent,
       fonts: observed.fonts,
+      browserErrors,
+      failedRequests,
+      observationError: "observationError" in observed ? observed.observationError : undefined,
       threshold: 0,
       diffPercentage: 0
     };
